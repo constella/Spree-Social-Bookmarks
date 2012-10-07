@@ -1,7 +1,5 @@
 module Spree
   class SocialBookmarksConfiguration < Preferences::Configuration
-    # possible removal? Never heard of most of these services
-    
     preference :ask, 			:boolean, :default => false
     preference :blinklist, 	:boolean, :default => false
     preference :blogmarks, 	:boolean, :default => false
@@ -12,7 +10,6 @@ module Spree
     preference :fark, 		:boolean, :default => false
     preference :furl, 		:boolean, :default => false
     preference :google, 		:boolean, :default => false
-    preference :magnolio, 	:boolean, :default => false
     preference :netscape, 	:boolean, :default => false
     preference :newsvine, 	:boolean, :default => false
     preference :reddit, 		:boolean, :default => false
@@ -22,7 +19,6 @@ module Spree
     preference :spurl, 		:boolean, :default => false
     preference :squidoo, 		:boolean, :default => false
     preference :stumbleupon, 	:boolean, :default => false
-    preference :swik, 		:boolean, :default => false
     preference :technorati, 	:boolean, :default => false
     preference :windowslive, 	:boolean, :default => false
     preference :myweb2, 		:boolean, :default => false

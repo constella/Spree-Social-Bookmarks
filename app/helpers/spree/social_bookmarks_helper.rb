@@ -1,35 +1,39 @@
 module Spree
   module SocialBookmarksHelper
-    # Dislay the social bookmarks
-    # <%= display_bookmarks(@product.name, product_url(@product)) %> OR
-    # <%= display_bookmarks(@product.name) %> which will use the current URI request
-  
-    def display_bookmarks(product_or_url = nil, title = nil, description = nil)
-      product = nil
-      image = nil
-      
-      if product_or_url.nil?
-        # TODO there has to be a better way to handle this
-        url = request.env["REQUEST_URI"]
-        url = 'http://'+request.host + request.fullpath if url.nil? or url.eql?(url.gsub(/http:/,'').gsub(/HTTP:/,''))
-      elsif product_or_url.class == String and url.eql?(url.gsub(/http:/,'').gsub(/HTTP:/,''))
-        url = 'http://'+request.host + url
-      elsif product_or_url.class == Spree::Product
-        url = polymorphic_url product_or_url
+    # TODO this needs a test suite
 
-        product = product_or_url
-        title = product_or_url.name if title.nil?
-        description = strip_tags(product_or_url.description) if description.nil?
-        image = request.protocol + request.host + product.images.first.attachment.url if product.images.count > 0
+    def display_bookmarks(object_or_url = nil, title = nil, description = nil)
+      locals = {}
+      
+      if object_or_url.blank?
+        url = request.env["REQUEST_URI"]
+        url = "http://#{request.host}#{request.fullpath}" if url.blank?
+      elsif object_or_url.is_a? String
+        url = "http://#{request.host}#{url}"
+      else
+        # then it must be an object
+        url = polymorphic_url(object_or_url)
+        locals.merge! :object => object_or_url
+
+        if title.blank?
+          title = object_or_url.name
+        end
+
+        if description.blank? and object_or_url.respond_to? :description
+          description = strip_tags(object_or_url.description)
+        end
+
+        if object_or_url.is_a? Spree::Product and object_or_url.images.size > 0
+          # TODO has to be better way to get full URL here
+          locals.merge! :image => u(request.protocol + request.host + object_or_url.images.first.attachment.url)
+        end
       end
 
-      render :partial => 'spree/shared/bookmarks', :locals => {
+      render :partial => 'spree/shared/bookmarks', :locals => locals.merge({
         :title => title,
         :description => description,
         :url => u(url),
-        :product => product,
-        :image => u(image)
-      }
+      })
     end
   end
 end

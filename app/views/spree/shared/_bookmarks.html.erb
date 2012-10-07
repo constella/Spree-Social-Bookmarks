@@ -1,32 +1,32 @@
 <%
+# TODO prevent this from executing if display_bookmarks is being used twice on a single page
+
 if Spree::SocialBookmarks::Config[:meta_tags]
-	open_graph = {
-		:title => title,
-		:url => url,
-		:type => :website
-	}
-	
-	unless product.nil?
-		open_graph[:image] = request.protocol + request.host + product.images.first.attachment.url if product.images.count > 0
-		open_graph[:description] = description
-	end
-	
-	content_for :head do
-		open_graph.each do |property, content|
-		%>
-<%= tag(:meta, :property => "og:#{property}", :content => content) %>
-<%
-		end
-	end
+  content_for :head do
+    cache ['product-social-meta', object] do
+      # open graph data for facebook 
+
+      open_graph = {
+        :title => title,
+        :url => url,
+        :type => :website
+      }
+      
+      if object.present? and object.is_a? Spree::Product
+        open_graph[:image] = request.protocol + request.host + object.images.first.attachment.url if object.images.count > 0
+        open_graph[:description] = description
+      end
+
+      open_graph.each do |property, content|
+        @output_buffer << tag(:meta, :property => "og:#{property}", :content => content)
+      end
+    end
+  end
 end
 %>
-<div class="bookmarks">
-	<%= t(:bookmarks_share) %>
-  <% if Spree::SocialBookmarks::Config[:facebook]%>
-   <a title="Add '<%= title %>' to Facebook" href="  http://www.facebook.com/sharer.php?u=<%= url %>&t=<%= title %>" target="_blank" rel="nofollow">
-      <img alt="Add to Facebook" src="<%=Spree::SocialBookmarks::Config[:image_path]%>facebook.png" />
-   </a>
-  <% end -%>
+<% cache ['product-social', object] do %>
+<%= content_tag(:div, :class => 'bookmarks') do %>
+  <%= t(:bookmarks_share) %>
   <%if Spree::SocialBookmarks::Config[:delicious]%>
    <a title="Add '<%= title %>' to Del.icio.us" href="http://del.icio.us/post?url=<%= url %>&title=<%= title %>" target="_blank" rel="nofollow">
       <img alt="Add to del.icio.us" src="<%=Spree::SocialBookmarks::Config[:image_path]%>delicious.png" />
@@ -67,22 +67,22 @@ end
       <img alt="Add to Spurl" src="<%=Spree::SocialBookmarks::Config[:image_path]%>spurl.png" />
    </a>
   <% end -%>
-	<% if Spree::SocialBookmarks::Config[:simpy]%>
+  <% if Spree::SocialBookmarks::Config[:simpy]%>
    <a title="Add '<%= title %>' on simpy.com" href="http://www.simpy.com/simpy/LinkAdd.do?href=<%= url %>&amp;title=<%= title %>" target="_blank" rel="nofollow">
       <img alt="Simpy.com" src="<%=Spree::SocialBookmarks::Config[:image_path]%>simpy.png" />
    </a>
   <% end -%>
-	<% if Spree::SocialBookmarks::Config[:fark]%>
+  <% if Spree::SocialBookmarks::Config[:fark]%>
    <a title="Add '<%= title %>' to fark.com" href="http://cgi.fark.com/cgi/fark/edit.pl?new_url=<%= url %>&amp;new_comment=<%= title %>&amp;new_link_other=&amp;linktype=Misc" target="_blank" rel="nofollow">
       <img alt="Fark.com" src="<%=Spree::SocialBookmarks::Config[:image_path]%>fark.png" />
    </a>
   <% end -%>
-	<% if Spree::SocialBookmarks::Config[:blogmarks]%>
+  <% if Spree::SocialBookmarks::Config[:blogmarks]%>
    <a title="BlogMark '<%= title %>'" href="http://blogmarks.net/my/new.php?mini=1&simple=1&url=<%= url %>title=<%= title %>" target="_blank" rel="nofollow">
       <img alt="BlogMark" src="<%=Spree::SocialBookmarks::Config[:image_path]%>blogmarks.png" />
    </a>
   <% end -%>
-	<% if Spree::SocialBookmarks::Config[:myweb2]%>
+  <% if Spree::SocialBookmarks::Config[:myweb2]%>
    <a title="Add '<%= title %>' to Yahoo! myweb2" href="http://myweb2.search.yahoo.com/myresults/bookmarklet?u=<%= url %>&amp;t=<%= title %>" target="_blank" rel="nofollow">
       <img alt="Yahoo! myweb2" src="<%=Spree::SocialBookmarks::Config[:image_path]%>yahoomyweb.png" />
    </a>
@@ -127,16 +127,6 @@ end
       <img alt="SlashDot" src="<%=Spree::SocialBookmarks::Config[:image_path]%>slashdot.png" />
    </a>
   <% end -%>
-  <% if Spree::SocialBookmarks::Config[:magnolia]%>
-   <a title="Add '<%= title %>' to ma.gnolia" href="http://ma.gnolia.com/bookmarklet/add?url=<%= url %>&title=<%= title %>" target="_blank" rel="nofollow">
-      <img alt="ma.gnolia" src="<%=Spree::SocialBookmarks::Config[:image_path]%>magnolia.png" />
-   </a>
-  <% end -%>
-  <% if Spree::SocialBookmarks::Config[:swik]%>
-   <a title="Add '<%= title %>' to SWiK" href="http://stories.swik.net/?submitUrl&url=<%= url %>" target="_blank" rel="nofollow">
-      <img alt="SWiK" src="<%=Spree::SocialBookmarks::Config[:image_path]%>swik.png" />
-   </a>
-  <% end -%>
   <% if Spree::SocialBookmarks::Config[:google]%>
    <a title="Add '<%= title %>' to Google Bookmarks" href="http://www.google.com/bookmarks/mark?op=edit&bkmk=<%= url %>&title=<%= title %>" target="_blank" rel="nofollow">
       <img alt="Google Bookmarks" src="<%=Spree::SocialBookmarks::Config[:image_path]%>googlebookmarks.png" />
@@ -147,19 +137,25 @@ end
       <img alt="ShoutWire" src="<%=Spree::SocialBookmarks::Config[:image_path]%>shoutwire.png" />
    </a>
   <% end -%>
+  <% if Spree::SocialBookmarks::Config[:facebook]%>
+   <a title="Add '<%= title %>' to Facebook" href="http://www.facebook.com/sharer.php?u=<%= url %>&t=<%= title %>" target="_blank" rel="nofollow">
+      <img alt="Add to Facebook" src="<%=Spree::SocialBookmarks::Config[:image_path]%>facebook.png" />
+   </a>
+  <% end -%>
   <% if Spree::SocialBookmarks::Config[:twitter]%>
   <a title="Add '<%= title %>' to Twitter" href="http://twitter.com/home?status=<%= url %>" target="_blank" rel="nofollow">
      <img alt="Twitter" src="<%=Spree::SocialBookmarks::Config[:image_path]%>twitter.png" />
   </a>
   <%end-%>
   <% if Spree::SocialBookmarks::Config[:pinterest] %>
-  <a title="Add '<%= title %>' to Pinterest" href="http://pinterest.com/pin/create/button/?url=<%= url %>&amp;media=<%= image %>">
-	  <img alt="Twitter" src="<%=Spree::SocialBookmarks::Config[:image_path]%>pinterest.png" />
+  <a title="Add '<%= title %>' to Pinterest" href="http://pinterest.com/pin/create/button/?url=<%= url %>&amp;media=<%= image %>" rel="nofollow">
+    <img alt="Pinterest" src="<%=Spree::SocialBookmarks::Config[:image_path]%>pinterest.png" />
   </a>
   <% end %>
-  <% if Spree::SocialBookmarks::Config[:email] and Rails::Engine.descendants.map(&:engine_name).include? "spree_email_to_friend"%>
-  <a title="Email '<%= title %>' to a Friend" href="<%=email_to_friend_url('product', @product)%>" target="_blank" rel="nofollow">
-     <img alt="ShoutWire" src="<%=Spree::SocialBookmarks::Config[:image_path]%>email.png" />
+  <% if Spree::SocialBookmarks::Config[:email] and gem_available? "spree_email_to_friend" and object.present? and object.is_a? Spree::Product %>
+  <a title="Email '<%= title %>' to a Friend" href="<%=email_to_friend_url('product', object)%>" target="_blank">
+     <img alt="Email to a Friend" src="<%=Spree::SocialBookmarks::Config[:image_path]%>email.png" />
   </a>
   <%end-%>
-</div>
+<% end -%>
+<% end %>
