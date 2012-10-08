@@ -147,7 +147,7 @@ end
      <img alt="Twitter" src="<%=Spree::SocialBookmarks::Config[:image_path]%>twitter.png" />
   </a>
   <%end-%>
-  <% if Spree::SocialBookmarks::Config[:pinterest] %>
+  <% if Spree::SocialBookmarks::Config[:pinterest] and image.present? %>
   <a title="Add '<%= title %>' to Pinterest" href="http://pinterest.com/pin/create/button/?url=<%= url %>&amp;media=<%= image %>" rel="nofollow">
     <img alt="Pinterest" src="<%=Spree::SocialBookmarks::Config[:image_path]%>pinterest.png" />
   </a>

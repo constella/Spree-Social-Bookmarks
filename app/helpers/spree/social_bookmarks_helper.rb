@@ -3,7 +3,7 @@ module Spree
     # TODO this needs a test suite
 
     def display_bookmarks(object_or_url = nil, title = nil, description = nil)
-      locals = {}
+      locals = { :image => nil, :object => nil }
       
       if object_or_url.blank?
         url = request.env["REQUEST_URI"]
