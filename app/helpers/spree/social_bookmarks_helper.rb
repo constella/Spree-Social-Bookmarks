@@ -23,9 +23,14 @@ module Spree
           description = strip_tags(object_or_url.description)
         end
 
+        # get image reference for pinterest and others
+
         if object_or_url.is_a? Spree::Product and object_or_url.images.size > 0
-          # TODO has to be better way to get full URL here
-          locals.merge! :image => u(request.protocol + request.host + object_or_url.images.first.attachment.url)
+          locals.merge! :image => u(attachment_url(object_or_url.images.first.attachment))
+        end
+
+        if object_or_url.respond_to? :photo and object_or_url.photo.present?
+          locals.merge! :image => u(attachment_url(object_or_url.photo))
         end
       end
 
@@ -34,6 +39,11 @@ module Spree
         :description => description,
         :url => u(url),
       })
+    end
+
+    # pulled from: https://github.com/thoughtbot/paperclip/issues/584
+    def attachment_url(attachment, style = :original)
+      "#{request.protocol}#{request.host_with_port}#{attachment.url(style)}"
     end
   end
 end

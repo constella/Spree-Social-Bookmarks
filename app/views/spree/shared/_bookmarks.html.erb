@@ -143,12 +143,17 @@ end
    </a>
   <% end -%>
   <% if Spree::SocialBookmarks::Config[:twitter]%>
-  <a title="Add '<%= title %>' to Twitter" href="http://twitter.com/home?status=<%= url %>" target="_blank" rel="nofollow">
+  <a title="Share '<%= title %>' on Twitter" href="http://twitter.com/home?status=<%= url %>" target="_blank" rel="nofollow">
      <img alt="Twitter" src="<%=Spree::SocialBookmarks::Config[:image_path]%>twitter.png" />
   </a>
+  <% if Spree::SocialBookmarks::Config[:google_plus] %>
+  <a title="Share '<%= title %> on Google Plus" href="https://plus.google.com/share?url=<%= url %>" target="_blank" rel="nofollow">
+    <img alt="Google Plus" src="<%=Spree::SocialBookmarks::Config[:image_path]%>google_plus.png" />
+  </a>
+  <%end-%>
   <%end-%>
   <% if Spree::SocialBookmarks::Config[:pinterest] and image.present? %>
-  <a title="Add '<%= title %>' to Pinterest" href="http://pinterest.com/pin/create/button/?url=<%= url %>&amp;media=<%= image %>" rel="nofollow">
+  <a title="Add '<%= title %>' to Pinterest" href="http://pinterest.com/pin/create/button/?url=<%= url %>&amp;media=<%= image %>" target="_blank" rel="nofollow">
     <img alt="Pinterest" src="<%=Spree::SocialBookmarks::Config[:image_path]%>pinterest.png" />
   </a>
   <% end %>
