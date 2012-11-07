@@ -14,7 +14,7 @@ You'll need to add social images to your `/assets/store/social` path (you can mo
 
 Check out [web2icon](http://www.fasticon.com/free-icons-social-media-vector-icons-2012/) for a clean icon set.
 
-Bookmarks include: ask, blinklist, blogmarks, delicious, digg, reddit, dzone, facebook, fark, furl, google bookmarks, magnolia, netscape, newsvine, reddit, shoutwire, simpy, slashdot, spurl, stumbleupon, swik, technorati, windows live, yahoo myweb2, pinterest, `spree_email_to_friend` extension.
+Bookmarks include: ask, blinklist, blogmarks, delicious, digg, reddit, dzone, facebook, fark, furl, google bookmarks, magnolia, netscape, newsvine, reddit, shoutwire, simpy, slashdot, spurl, stumbleupon, swik, technorati, windows live, yahoo myweb2, pinterest, google plus, and the `spree_email_to_friend` extension.
 
 This extension implements fragment caching. If you use display bookmark without an object argument, your caches will not expire. I recommend setting your app version for each release as this should eliminate any problem you may have with fragment expiration
 	
