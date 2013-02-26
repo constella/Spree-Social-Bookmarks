@@ -11,7 +11,6 @@ Gem::Specification.new do |s|
   s.author            = 'Michael Bianco'
   s.email             = 'info@cliffsidedev.com'
 
-  s.files         = `git ls-files`.split("\n")
   s.require_path = 'lib'
   s.requirements << 'none'
 
