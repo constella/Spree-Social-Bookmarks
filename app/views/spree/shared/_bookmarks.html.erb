@@ -1,28 +1,8 @@
 <%
-# TODO prevent this from executing if display_bookmarks is being used twice on a single page
+meta_tags ||= true
 
-if Spree::SocialBookmarks::Config[:meta_tags]
-  content_for :head do
-    cache ['product-social-meta', object] do
-      # open graph data for facebook 
-
-      open_graph = {
-        :title => title,
-        :url => url,
-        :type => :website
-      }
-      
-      if object.present? and object.is_a? Spree::Product
-        open_graph[:image] = request.protocol + request.host + object.images.first.attachment.url if object.images.count > 0
-        open_graph[:description] = description
-      end
-
-      open_graph.each do |property, content|
-        @output_buffer << tag(:meta, :property => "og:#{property}", :content => content)
-      end
-    end
-  end
-end
+# TODO prevent the meta partial from being run multiple times per page
+render :partial => 'spree/shared/bookmarks_meta', :locals => local_assigns if meta_tags
 %>
 <% cache ['product-social', object] do %>
 <%= content_tag(:div, :class => 'bookmarks') do %>

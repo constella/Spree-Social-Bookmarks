@@ -1,0 +1,23 @@
+<%
+if Spree::SocialBookmarks::Config[:meta_tags]
+  content_for :head do
+    cache ['product-social-meta', object] do
+      # open graph data for facebook 
+      # TODO should implement open graph for twitter
+
+      open_graph = {
+        :title => title,
+        :url => url,
+        :type => :website
+      }
+      
+      open_graph[:image] = image if image.present?
+      open_graph[:description] = description if description.present?
+
+      open_graph.each do |property, content|
+        @output_buffer << tag(:meta, :property => "og:#{property}", :content => content)
+      end
+    end
+  end
+end
+%>

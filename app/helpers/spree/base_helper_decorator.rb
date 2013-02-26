@@ -36,7 +36,7 @@ Spree::BaseHelper.class_eval do
     render :partial => 'spree/shared/bookmarks', :locals => locals.merge({
       :title => title,
       :description => description,
-      :url => u(url),
+      :url => url,
     })
   end
 
